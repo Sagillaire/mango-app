@@ -24,7 +24,7 @@ export const Range: React.FC<Props> = ({
   );
   const [currentMin, setCurrentMin] = useState<number>(minValue);
   const [currentMax, setCurrentMax] = useState<number>(maxValue);
-  const [isUserInput, setIsUserInput] = useState<boolean>(false); // Estado para detectar input del usuario
+  const [isUserInput, setIsUserInput] = useState<boolean>(false);
   const [isEditingMin, setIsEditingMin] = useState(false);
   const [isEditingMax, setIsEditingMax] = useState(false);
 
@@ -79,9 +79,7 @@ export const Range: React.FC<Props> = ({
 
   useEffect(() => {
     if (mode === "fixed" && (!values || values.length === 0)) return;
-
-    // Evitar que el efecto sobrescriba valores si ya fueron modificados por el usuario
-    if (isUserInput) return; // Solo actualizar si no es input del usuario
+    if (isUserInput) return;
 
     const newMin = mode === "fixed" ? values[0] : min;
     const newMax = mode === "fixed" ? values[values.length - 1] : max;
@@ -100,27 +98,29 @@ export const Range: React.FC<Props> = ({
     if (newMin < maxValue) {
       setMinValue(newMin);
       setCurrentMin(newMin);
-      setIsUserInput(true); // Indicamos que el usuario está cambiando el valor
+      setIsUserInput(true);
     }
   };
 
   const handleMaxInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newMax = Number(e.target.value); // Puedes ajustar este límite según necesites
+    const newMax = Number(e.target.value);
     if (newMax > minValue) {
       setMaxValue(newMax);
       setCurrentMax(newMax);
-      setIsUserInput(true); // Indicamos que el usuario está cambiando el valor
+      setIsUserInput(true);
     }
   };
 
-  const handlepress = (type: "min" | "max") =>
-    type === "min" ? setIsEditingMin(false) : setIsEditingMax(false);
+  const toggleEditing = (type: "min" | "max") => {
+    if (type === "min") setIsEditingMin(!isEditingMin);
+    else setIsEditingMax(!isEditingMax);
+  };
 
   if (loading) return <h2 style={{ textAlign: "center" }}>Loading...</h2>;
 
   return (
     <div className="container">
-      <div onClick={() => setIsEditingMin(!isEditingMin)}>
+      <div onClick={() => toggleEditing("min")}>
         {isEditingMin ? (
           <input
             autoFocus
@@ -128,8 +128,8 @@ export const Range: React.FC<Props> = ({
             value={minValue}
             className="input"
             onChange={handleMinInputChange}
-            onBlur={() => handlepress("min")}
-            onKeyDown={(e) => e.key === "Enter" && handlepress("min")}
+            onBlur={() => toggleEditing("min")}
+            onKeyDown={(e) => e.key === "Enter" && toggleEditing("min")}
           />
         ) : (
           <span className="input-label">{minValue} €</span>
@@ -139,27 +139,34 @@ export const Range: React.FC<Props> = ({
         <div className="slider-track"></div>
         <div
           className="slider-range"
+          role="progressbar"
           style={{
             left: `${percentMin}%`,
             width: `${percentMax - percentMin}%`,
           }}
         ></div>
         <div
+          role="slider"
           className="slider-thumb"
           style={{ left: `${percentMin}%` }}
           onMouseDown={() => startDrag(true)}
         >
-          <span className="tooltip">{currentMin}</span>
+          <span role="tooltip" className="tooltip">
+            {currentMin}
+          </span>
         </div>
         <div
+          role="slider"
           className="slider-thumb"
           style={{ left: `${percentMax}%` }}
           onMouseDown={() => startDrag(false)}
         >
-          <span className="tooltip">{currentMax}</span>
+          <span role="tooltip" className="tooltip">
+            {currentMax}
+          </span>
         </div>
       </div>
-      <div onClick={() => setIsEditingMax(!isEditingMax)}>
+      <div onClick={() => toggleEditing("max")}>
         {isEditingMax ? (
           <input
             autoFocus
@@ -167,23 +174,13 @@ export const Range: React.FC<Props> = ({
             className="input"
             value={maxValue}
             onChange={handleMaxInputChange}
-            onBlur={() => handlepress("max")}
-            onKeyDown={(e) => e.key === "Enter" && handlepress("max")}
+            onBlur={() => toggleEditing("max")}
+            onKeyDown={(e) => e.key === "Enter" && toggleEditing("max")}
           />
         ) : (
           <span className="input-label">{maxValue} €</span>
         )}
       </div>
-      {/* <span className="input-label">{maxValue} €</span> */}
-      {/* <div className="inputs">
-        <input
-          type="number"
-          onKeyDown={(e) => e.key === "Enter" && handlepress()}
-          onBlur={() => handlepress()}
-          value={maxValue || 0}
-          onChange={handleMaxInputChange}
-        />
-      </div> */}
     </div>
   );
 };
