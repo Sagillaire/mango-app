@@ -1,7 +1,7 @@
 "use client";
-import { useGetDataRanges } from "hooks/useGetDataRanges";
-import { useSimulatedData } from "hooks/useSimulatedData";
-import { Range } from "../components";
+import { Range } from "@components/Range";
+import { useGetDataRanges } from "@hooks/useGetDataRanges";
+import { useSimulatedData } from "@hooks/useSimulatedData";
 
 export default function Page() {
   const { range, isLoading } = useSimulatedData({});
