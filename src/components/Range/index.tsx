@@ -40,9 +40,9 @@ export const Range: React.FC<Props> = ({
     <div className="container">
       <EditableLabel
         value={minValue}
-        isEditing={isEditingMin}
         onChange={handleMinInputChange}
         onToggleEdit={() => toggleEditing("min")}
+        isEditing={mode === "normal" && isEditingMin}
       />
 
       <Slider
@@ -55,9 +55,9 @@ export const Range: React.FC<Props> = ({
 
       <EditableLabel
         value={maxValue}
-        isEditing={isEditingMax}
         onChange={handleMaxInputChange}
         onToggleEdit={() => toggleEditing("max")}
+        isEditing={mode === "normal" && isEditingMax}
       />
     </div>
   );
